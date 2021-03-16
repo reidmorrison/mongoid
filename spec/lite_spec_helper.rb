@@ -51,11 +51,10 @@ RSpec.configure do |config|
     config.add_formatter(RSpec::Core::Formatters::JsonFormatter, File.join(File.dirname(__FILE__), '../tmp/rspec.json'))
   end
 
-  if SpecConfig.instance.ci?
+  if SpecConfig.instance.ci? && !%w(1 true yes).include?(ENV['INTERACTIVE']&.downcase)
     timeout = if SpecConfig.instance.app_tests?
-      # Allow 5 minutes per test for the app tests, since they install
-      # gems for Rails applications which can take a long time.
-      300
+      # App tests under JRuby take a REALLY long time (over 5 minutes per test).
+      500
     else
       # Allow a max of 30 seconds per test.
       # Tests should take under 10 seconds ideally but it seems
